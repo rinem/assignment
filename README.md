@@ -6,7 +6,7 @@ AirLearn Assignment
 [![React Version][react-image]][react-url]
 [![Material-UI Version][material-ui-image]][material-ui-url]
 
-# Before you Code
+# Installation and Running the Client
 
 1. Clone the repo
 

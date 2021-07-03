@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Filelist from "./Filelist";
 import Typography from "@material-ui/core/Typography";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+
+// Should be added in .env file
+const REACT_APP_API_URL = "https://api.imgur.com/3/image/";
+const REACT_APP_CLIENT_ID = "6dc6db3a69cdfe4";
 
 const useStyles = makeStyles({
   root: {
@@ -26,43 +30,30 @@ const Home = () => {
     console.log(event.target.files[0]);
   };
 
-  const getFiles = () => {
-    axios
-      .get("http://localhost:5000/files/")
-      .then((res) => {
-        // then print response status
-        setFilesData(res.data);
-      })
-      .catch(function () {
-        console.log("Error!");
-      });
-  };
+  const onClickHandler = async () => {
+    const form = new FormData();
 
-  const onClickHandler = () => {
-    const data = new FormData();
-    data.append("file", file);
-    console.log(data);
-    axios
-      .post("http://localhost:5000/files/", data, {
+    form.append("image", file);
+    console.log(form, file);
+    setFilesData([...filesData, file.name]);
+
+    try {
+      const response = await axios({
+        method: "post",
+        url: REACT_APP_API_URL,
+        data: form,
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
+          Authorization: `Client-ID ${REACT_APP_CLIENT_ID}`,
         },
-      })
-      .then((res) => {
-        // then print response status
-        console.log(res);
-      })
-      .catch(function () {
-        console.log("Error!");
       });
-
-    getFiles();
-    // window.location.reload();
+      console.log(response);
+      setFile(null);
+    } catch (error) {
+      console.log(error);
+      setFile(null);
+    }
   };
-
-  useEffect(() => {
-    getFiles();
-  }, []);
 
   return (
     <div className="App">
